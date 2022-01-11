@@ -800,3 +800,32 @@ metadata:
   namespace: iter8-monitoring
 `)
 }
+
+func TestIntNamespaced(t *testing.T) {
+	th := kusttest_test.MakeHarness(t)
+	th.WriteF("secrets.yaml", `
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dummy
+type: Opaque
+data:
+  dummy: ""
+`)
+	th.WriteK(".", `
+resources:
+- secrets.yaml
+namespace: "01234"
+`)
+	m := th.Run(".", th.MakeDefaultOptions())
+	th.AssertActualEqualsExpected(m, `
+apiVersion: v1
+data:
+  dummy: ""
+kind: Secret
+metadata:
+  name: dummy
+  namespace: "01234"
+type: Opaque
+`)
+}
